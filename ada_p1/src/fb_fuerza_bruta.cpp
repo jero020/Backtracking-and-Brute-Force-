@@ -1,3 +1,5 @@
+#include "fb_fuerza_bruta.hpp"
+
 #include <algorithm>
 #include <chrono>
 #include <cctype>
@@ -5,28 +7,17 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
-#include <string>
-#include <vector>
 
 #include "third_party/picosha2.h"
+
+namespace fb {
 
 using namespace std;
 using namespace chrono;
 
-enum class ModoComparacion {
-    TextoPlano = 1,
-    Sha256 = 2
-};
-
 // Ruta por defecto del diccionario, relativa al directorio desde el que se
-// ejecuta el binario (se espera correr "./fuerza_bruta" desde la carpeta FB/).
+// ejecuta el binario (se espera correr "./ada_p1" desde la carpeta ada_p1/).
 const string RUTA_DICCIONARIO_DEFECTO = "resources/diccionario.txt";
-
-struct ResultadoBusqueda {
-    bool encontrada = false;
-    string candidata;
-    unsigned long long intentos = 0;
-};
 
 string calcularSha256(const string& texto) {
     return picosha2::hash256_hex_string(texto);
@@ -267,7 +258,7 @@ void opcionDiccionario() {
     if (palabras.empty()) {
         cout << "No se pudo abrir " << RUTA_DICCIONARIO_DEFECTO
              << " (o esta vacio). Verifique que existe y que el programa se"
-             << " ejecuta desde la carpeta FB/.\n";
+             << " ejecuta desde la carpeta ada_p1/.\n";
         return;
     }
 
@@ -323,7 +314,7 @@ void opcionComparacionSeccion81() {
     if (palabras.empty()) {
         cout << "No se pudo abrir " << RUTA_DICCIONARIO_DEFECTO
              << " (o esta vacio). Verifique que existe y que el programa se"
-             << " ejecuta desde la carpeta FB/.\n";
+             << " ejecuta desde la carpeta ada_p1/.\n";
         return;
     }
 
@@ -347,14 +338,14 @@ void opcionComparacionSeccion81() {
          << " mucho mas tiempo/intentos a medida que crece el espacio de busqueda.\n";
 }
 
-int main() {
+void ejecutarMenu() {
     while (true) {
         cout << "\n=== FUERZA BRUTA ===\n"
              << "1. Comparacion directa con texto plano\n"
              << "2. Comparacion mediante SHA-256\n"
              << "3. Ataque por diccionario (SHA-256)\n"
              << "4. Comparacion fuerza bruta vs. diccionario (Seccion 8.1)\n"
-             << "5. Salir\n"
+             << "5. Volver al menu principal\n"
              << "Seleccione una opcion: ";
 
         int opcion = 0;
@@ -379,11 +370,13 @@ int main() {
                 opcionComparacionSeccion81();
                 break;
             case 5:
-                cout << "Programa finalizado.\n";
-                return 0;
+                cout << "Volviendo al menu principal.\n";
+                return;
             default:
                 cout << "Opcion invalida.\n";
                 break;
         }
     }
 }
+
+} // namespace fb

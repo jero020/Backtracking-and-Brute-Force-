@@ -1,0 +1,10 @@
+# Binarios compilados (no deben versionarse)
+BT/bt
+FB/main
+FB/fuerza_bruta
+*.o
+build/
+
+# Archivos de sistema
+.DS_Store
+ada_p1/ada_p1

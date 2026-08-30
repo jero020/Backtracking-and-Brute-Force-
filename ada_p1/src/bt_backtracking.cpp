@@ -1,22 +1,4 @@
-// Módulo BT — Backtracking.
-//
-// Carpeta de contingencia (rol de QA/coordinación, Jerónimo) para el equipo
-// de la Práctica 1 de ADA, mientras Camila entrega su propia implementación.
-// Si Camila entrega la suya, esta se reemplaza; si no, esta es la que se
-// presenta -- en ese caso, quien la presente debe poder defenderla en la
-// sustentación oral (Sección 16 del enunciado) y declararla correctamente
-// en la Sección 17 (uso de IA) del informe.
-//
-// Uso (menú interactivo, igual estilo que src/main.cpp del Módulo FB):
-//   1. Validar la instancia de referencia común (n=6, minLower=2, minUpper=1,
-//      minDigit=1, minSymbol=1, alfabeto completo).
-//   2. Calcular la semilla y la política del equipo (Sección 9.2) a partir
-//      de los apellidos.
-//   3. Generar y correr las 5 variantes de dificultad de la Sección 9.2,
-//      guardando resultados en results/bt_variantes.csv.
-//   4. Comparar con poda vs. sin poda sobre un alfabeto reducido, para
-//      validar correctitud rápidamente (Sección 8.2).
-//   5. Salir.
+#include "bt_backtracking.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -24,14 +6,12 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
-#include <string>
-#include <vector>
 
 using namespace std;
 using namespace chrono;
 
 // ---------------------------------------------------------------------
-// Semilla del equipo (Sección 9.1 / 9.2)
+// Semilla del equipo (Seccion 9.1 / 9.2)
 // ---------------------------------------------------------------------
 namespace semilla {
 
@@ -73,7 +53,7 @@ vector<uint32_t> generarSecuenciaLCG(long long semillaInicial, size_t cantidad) 
 } // namespace semilla
 
 // ---------------------------------------------------------------------
-// Política de contraseñas (Sección 9.2)
+// Politica de contrasenas (Seccion 9.2)
 // ---------------------------------------------------------------------
 namespace bt {
 
@@ -82,18 +62,6 @@ const string MAYUSCULAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const string DIGITOS    = "0123456789";
 const string SIMBOLOS   = "!@#$%";
 const string ALFABETO_BASE = MINUSCULAS + MAYUSCULAS + DIGITOS + SIMBOLOS;
-// NOTA: el enunciado dice "69 simbolos en total"; minusculas(26) +
-// mayusculas(26) + digitos(10) + simbolos(5) = 67. Se implementa lo descrito
-// literalmente (67); confirmar con el docente si faltan 2 simbolos.
-
-struct Politica {
-    int minLower = 0;
-    int minUpper = 0;
-    int minDigit = 0;
-    int minSymbol = 0;
-    bool prohibirRepetidosConsecutivos = true;
-    int longitud = 8;
-};
 
 Politica derivarPolitica(long long semillaEquipo, int longitud, bool& ajustada) {
     Politica p;
@@ -123,16 +91,6 @@ int tipoCaracter(char c) {
 // ---------------------------------------------------------------------
 // Backtracking con poda y version sin poda (Seccion 8.2)
 // ---------------------------------------------------------------------
-struct EstadoConteo {
-    int lower = 0, upper = 0, digit = 0, symbol = 0;
-};
-
-struct ResultadoBT {
-    long long nodos = 0;      // con poda: visitados; sin poda: generados
-    long long soluciones = 0;
-    vector<string> ejemplos;
-};
-
 void actualizarConteo(EstadoConteo& c, char ch) {
     switch (tipoCaracter(ch)) {
         case 0: c.lower++; break;
@@ -216,7 +174,7 @@ void backtrackSinPoda(const Politica& pol, const string& alfabeto, string& prefi
 
 } // namespace detalle
 
-ResultadoBT generarConPoda(const Politica& pol, const string& alfabeto, int limiteEjemplos = 10) {
+ResultadoBT generarConPoda(const Politica& pol, const string& alfabeto, int limiteEjemplos) {
     ResultadoBT resultado;
     string prefijo;
     prefijo.reserve(static_cast<size_t>(pol.longitud));
@@ -225,11 +183,6 @@ ResultadoBT generarConPoda(const Politica& pol, const string& alfabeto, int limi
     return resultado;
 }
 
-// ADVERTENCIA: sin ninguna poda. Genera literalmente Sigma^0..Sigma^n. Para
-// el alfabeto/longitud reales de esta practica (67 simbolos, n=8..10) es
-// INTRATABLE. Usenla solo con alfabetos reducidos y n pequeno (opcion 4 del
-// menu) para validar que el conteo de soluciones coincide con la version
-// con poda -- ese es el chequeo de correctitud de la Seccion 8.2.
 ResultadoBT generarSinPoda(const Politica& pol, const string& alfabeto) {
     ResultadoBT resultado;
     string prefijo;
@@ -293,7 +246,7 @@ void opcionReferencia() {
     for (auto& e : r.ejemplos) cout << e << " ";
     cout << "\n";
     cout << (r.soluciones > 0 ? "OK: la implementacion genera soluciones validas.\n"
-                              : "ERROR: no se genero ninguna solucion.\n");
+                               : "ERROR: no se genero ninguna solucion.\n");
 }
 
 void opcionSemilla() {
@@ -411,14 +364,16 @@ void opcionComparacion() {
 
 } // namespace
 
-int main() {
+namespace bt {
+
+void ejecutarMenu() {
     while (true) {
         cout << "\n=== BACKTRACKING ===\n"
              << "1. Validar instancia de referencia comun\n"
              << "2. Calcular semilla y politica del equipo\n"
              << "3. Generar y correr las 5 variantes (Seccion 9.2)\n"
              << "4. Comparar con poda vs. sin poda (alfabeto reducido)\n"
-             << "5. Salir\n"
+             << "5. Volver al menu principal\n"
              << "Seleccione una opcion: ";
 
         int opcion = 0;
@@ -430,7 +385,7 @@ int main() {
         }
 
         if (opcion == 5) {
-            cout << "Programa finalizado.\n";
+            cout << "Volviendo al menu principal.\n";
             break;
         }
 
@@ -442,5 +397,6 @@ int main() {
             default: cout << "Opcion invalida.\n"; break;
         }
     }
-    return 0;
 }
+
+} // namespace bt
