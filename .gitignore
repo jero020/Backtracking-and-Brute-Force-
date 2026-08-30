@@ -1,10 +1,12 @@
-# Binarios compilados (no deben versionarse)
-BT/bt
-FB/main
-FB/fuerza_bruta
+# Binario compilado (no debe versionarse)
+ada_p1
 *.o
 build/
 
 # Archivos de sistema
 .DS_Store
-ada_p1/ada_p1
+
+# Binarios historicos de archivo_referencia (no versionar)
+archivo_referencia/BT/bt
+archivo_referencia/FB/fuerza_bruta
+archivo_referencia/FB/main
