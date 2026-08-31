@@ -91,9 +91,10 @@ int tipoCaracter(char c) {
 // ---------------------------------------------------------------------
 // Motor de busqueda con poda y version sin poda (Seccion 8.2)
 //
-// Este es el algoritmo real de Camila Garcia Ortiz para el modulo BT (ver
-// archivo_referencia/BT/main.cpp: clase Estado, factibilidad(),
-// esSolucion() y bt()), adaptado con asistencia de IA para poder
+// Este es el algoritmo real de Camila Garcia Ortiz para el modulo BT
+// (clase Estado, factibilidad(), esSolucion() y bt(); prototipo original
+// preservado en el historial de git, commit a0da07b), adaptado con
+// asistencia de IA para poder
 // parametrizarse por alfabeto/longitud/politica en vez de las 7
 // instancias fijas del prototipo original, y para poder correrse tambien
 // "sin poda" (necesario para la Seccion 8.2). La regla de factibilidad

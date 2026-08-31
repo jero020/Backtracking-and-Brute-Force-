@@ -8,7 +8,8 @@
 // Modulo de Backtracking (BT). El motor de busqueda de este archivo (clase
 // Estado + factibilidad() + esSolucion() + bt(), ver bt_backtracking.cpp)
 // es el algoritmo que entrego Camila Garcia Ortiz como prototipo del
-// modulo BT (ver archivo_referencia/BT/main.cpp y su README/CONVERSACIONES_IA.md).
+// modulo BT (prototipo original preservado en el historial de git, commit
+// a0da07b; conversaciones de apoyo en report/conversaciones_ia_bt.md).
 // Con asistencia de IA (Claude, 30-ago-2026) se adapto para poder
 // parametrizarse por alfabeto/longitud/politica desde el menu interactivo
 // de ada_p1 en vez de las 7 instancias fijas del prototipo original, y

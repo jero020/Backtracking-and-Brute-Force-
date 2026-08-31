@@ -4,7 +4,8 @@
 > petición de Jerónimo Vélez Acosta, como borrador de trabajo. El motor de
 > búsqueda que describe (clase `Estado`, `factibilidad()`, `esSolucion()`,
 > `bt()`) es el algoritmo real que entregó Camila García Ortiz como
-> prototipo del módulo BT (`archivo_referencia/BT/main.cpp`); se adaptó con
+> prototipo del módulo BT (prototipo original preservado en el historial
+> de git, commit `a0da07b`); se adaptó con
 > asistencia de IA (30-ago-2026) para poder correrse con alfabeto/longitud/
 > política arbitrarios desde el menú interactivo, sin cambiar la lógica de
 > poda. Los datos de tiempo/nodos citados aquí vienen de ejecuciones

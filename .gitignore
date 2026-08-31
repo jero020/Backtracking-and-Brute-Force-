@@ -6,7 +6,3 @@ build/
 # Archivos de sistema
 .DS_Store
 
-# Binarios historicos de archivo_referencia (no versionar)
-archivo_referencia/BT/bt
-archivo_referencia/FB/fuerza_bruta
-archivo_referencia/FB/main

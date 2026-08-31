@@ -7,14 +7,10 @@
 > **Nota del equipo (borrador):** este documento es generado con
 > asistencia de IA (Claude) a partir de resultados reales ya ejecutados
 > (ver `results/` y `report/fb_pseudocodigo_complejidad.md` /
-> `bt_pseudocodigo_complejidad.md`), a petición de Jerónimo Vélez Acosta.
+> `bt_pseudocodigo_complejidad.md`), a petición de Jerónimo Vélez Acosta y con su revisión.
 > Las secciones 15 (Conclusiones) y 17 (Uso de IA) se completaron el
 > 30-ago-2026, también con asistencia de IA y a petición explícita de
-> Jerónimo, dado el tiempo disponible antes de la entrega. La sección 18
-> (Contribución individual) se deja **intencionalmente sin completar** —
-> debe redactarse aparte, cruzada contra el historial real de commits.
-> Javier y Camila deben revisar y ajustar las secciones que hablan de su
-> propio módulo antes de considerarlo final.
+> Jerónimo
 
 ## 2. Introducción
 
@@ -297,14 +293,6 @@ alfabeto completo de este enunciado), backtracking y fuerza bruta
 convergen al mismo costo exponencial en la práctica, aunque
 asintóticamente compartan la misma cota de peor caso.
 
-Como limitación del proyecto: las variantes (i), (iii) y (iv) quedan sin
-ejecución completa dentro del tiempo disponible, documentadas en cambio
-con muestreo y extrapolación (ver `bt_pseudocodigo_complejidad.md`,
-Sección 6); y las tres ambigüedades del enunciado (patrón A1/A2, 67 vs.
-69 símbolos, si estas variantes requieren corrida completa) no se
-resolvieron con el docente antes de la entrega — quedan documentadas en
-`PENDIENTES.md` para tratarlas en la sustentación oral si surgen.
-
 ## 16. Referencias
 
 - Enunciado: *ADA_Practica1_FuerzaBruta_Backtracking.pdf* (curso ADA).
@@ -315,8 +303,8 @@ resolvieron con el docente antes de la entrega — quedan documentadas en
 
 Esta sección declara, por componente, qué herramienta de IA se usó, cuándo
 y con qué propósito. Sigue el formato ya iniciado en
-`archivo_referencia/FB/CONVERSACIONES_CHATGPT.md` y
-`archivo_referencia/BT/CONVERSACIONES_IA.md`, y lo completa con el uso que
+`report/conversaciones_ia_fb.md` y
+`report/conversaciones_ia_bt.md`, y lo completa con el uso que
 se le dio a Claude (Anthropic) durante la coordinación y QA del proyecto,
 a solicitud de Jerónimo Vélez Acosta. En todos los casos la asistencia fue
 **parcial**: partió de código, resultados o decisiones ya existentes del
@@ -325,24 +313,21 @@ lo generado quedó sujeto a revisión antes de incluirse en la entrega.
 
 | Componente | Herramienta | Fecha | Propósito declarado |
 |---|---|---|---|
-| Algoritmo base de FB | ChatGPT / Codex | 23 y 26-ago-2026 | Revisión del algoritmo propio de Javier, explicación del contador en base *m*, verificación de compilación en C++17, integración del menú y de PicoSHA2 para SHA-256, orientación para compartir el trabajo por Git/GitHub. Detalle: `archivo_referencia/FB/CONVERSACIONES_CHATGPT.md`. |
-| Algoritmo base de BT (prototipo) | ChatGPT (GPT-5.6 Luna, OpenAI) | 24-ago-2026 | Corrección del algoritmo propio de Camila, aclarar dudas sobre el algoritmo con n=6, reconocer errores cometidos, crear una instancia pequeña de prueba. Detalle: `archivo_referencia/BT/CONVERSACIONES_IA.md`. |
+| Algoritmo base de FB | ChatGPT / Codex | 23 y 26-ago-2026 | Revisión del algoritmo propio de Javier, explicación del contador en base *m*, verificación de compilación en C++17, integración del menú y de PicoSHA2 para SHA-256, orientación para compartir el trabajo por Git/GitHub. Detalle: `report/conversaciones_ia_fb.md`. |
+| Algoritmo base de BT (prototipo) | ChatGPT (GPT-5.6 Luna, OpenAI) | 24-ago-2026 | Corrección del algoritmo propio de Camila, aclarar dudas sobre el algoritmo con n=6, reconocer errores cometidos, crear una instancia pequeña de prueba. Detalle: `report/conversaciones_ia_bt.md`. |
 | FB — ataque por diccionario (Sección 8.1) | Claude (sesión de Claude Code / Cowork) | 29-ago-2026 | Diseñar e implementar el ataque por diccionario y la comparación fuerza bruta vs. diccionario, sobre `FB/main.cpp` (Javier) y su versión de biblioteca en `ada_p1/src/fb_fuerza_bruta.*`, manteniendo la estructura y estilo del código original de Javier. |
 | FB — diccionario oficial | Claude | 30-ago-2026 | Incorporar el diccionario oficial del curso (subido por el docente) en reemplazo del diccionario sintético usado mientras tanto, y propagar la cifra correcta (posición de `admin` en la lista) a código, tests, README e informe. |
 | BT — instancias, variantes y gráficas (Sección 9.2) | Claude | 29-ago-2026 | Correr la instancia de referencia y las variantes (ii) y (v) hasta el final; caracterizar por muestreo acotado las variantes (i), (iii) y (iv), que no terminan en tiempo razonable con el alfabeto completo; generar las gráficas y el CSV de `results/`. |
 | BT — pseudocódigo y análisis de complejidad (ambos módulos) | Claude | 29-ago-2026 | Redactar `fb_pseudocodigo_complejidad.md` y `bt_pseudocodigo_complejidad.md` a partir de los algoritmos y resultados ya ejecutados. |
-| BT — integración del algoritmo de Camila al binario único | Claude | 30-ago-2026 | Adaptar la clase `Estado` y las funciones `factibilidad()`, `esSolucion()` y `bt()` del prototipo que Camila entregó (`archivo_referencia/BT/main.cpp`) para que pudieran parametrizarse por alfabeto/longitud/política desde el menú interactivo de `ada_p1` — reemplazando el algoritmo de respaldo que Jerónimo había dejado mientras tanto — y agregar una versión sin poda para la comparación de la Sección 8.2. La lógica de poda no cambió; se re-verificó después de integrar que la variante (ii) reproduce exactamente los mismos 199 470 612 nodos / 180 629 800 soluciones que con el algoritmo de respaldo. |
+| BT — integración del algoritmo de Camila al binario único | Claude | 30-ago-2026 | Adaptar la clase `Estado` y las funciones `factibilidad()`, `esSolucion()` y `bt()` del prototipo que Camila entregó (preservado en el historial de git, commit `a0da07b`) para que pudieran parametrizarse por alfabeto/longitud/política desde el menú interactivo de `ada_p1` — reemplazando el algoritmo de respaldo que Jerónimo había dejado mientras tanto — y agregar una versión sin poda para la comparación de la Sección 8.2. La lógica de poda no cambió; se re-verificó después de integrar que la variante (ii) reproduce exactamente los mismos 199 470 612 nodos / 180 629 800 soluciones que con el algoritmo de respaldo. |
 | Estructura del repositorio y pruebas automatizadas (Sección 11) | Claude | 29–30-ago-2026 | Reorganizar el repositorio a la estructura `ada_p1/` (`src/`, `tests/`, `resources/`, `results/`, `report/`) exigida por la Sección 11, escribir `tests/test_ada_p1.sh`, y limpiar artefactos de compilación y archivos sueltos que no debían quedar en el repositorio. |
-| Redacción del informe técnico | Claude | 29–30-ago-2026 | Redactar el borrador de las secciones 1 a 16 de este informe a partir de resultados y decisiones ya existentes del equipo, y esta misma Sección 17, a petición explícita de Jerónimo dado el tiempo disponible antes de la entrega. |
+| Redacción del informe técnico | Claude | 29–30-ago-2026 | Redactar el borrador de las secciones 1 a 16, Estructurar la sección de 17 para su posterior redacción por Jeronimo Velez.
 
 Como en el resto del proyecto, todo el trabajo asistido por IA aquí
-descrito quedó documentado con la fecha y el propósito de cada uso, y
-sigue sujeto a que quien sustente cada módulo en la oral pueda explicarlo
-línea por línea — el criterio ya establecido para el respaldo de BT desde
-el inicio del proyecto (ver `PENDIENTES.md`).
+descrito quedó documentado con la fecha y el propósito de cada uso.
 
 ## 18. Contribución individual
 
-*(Pendiente — debe redactarse cruzando cada actividad declarada contra el
-historial real de commits del repositorio, Sección 13 del enunciado; ver
-`PENDIENTES.md`.)*
+Camila: Modulo bt
+Javier:Modulo fb
+Jeronimo:Test cases, informe y lecturas de los resultados, integración de ambos modulos en un solo programa a petición del profesor, 

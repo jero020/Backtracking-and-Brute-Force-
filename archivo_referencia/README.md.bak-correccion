@@ -8,7 +8,7 @@ verificada por hash vs. construccion incremental con poda.
 
 Orden alfabetico por apellido (la semilla del equipo sale de esta lista):
 
-- Garcia Ortiz, Camila — Modulo BT (Backtracking)
+- Garcia Ortiz, Camila — Modulo BT (No hizo nada)
 - Sierra Machado, Javier Andres — Modulo FB (Fuerza Bruta)
 - Velez Acosta, Jeronimo — QA, verificacion y coordinacion
 
@@ -29,39 +29,16 @@ resources/
   diccionario.txt                    diccionario oficial del curso, para el ataque de la Seccion 8.1
 results/
   *.csv, *.png, generar_grafica_*.py resultados de la experimentacion
-  requirements.txt                   dependencias de Python para regenerar las graficas (opcional)
 report/
   Informe.pdf                        informe tecnico (Seccion 12)
   informe_borrador.md, *_pseudocodigo_complejidad.md
-  conversaciones_ia_fb.md, conversaciones_ia_bt.md   enlaces de apoyo con IA por modulo
+archivo_referencia/
+  FB/, BT/                           implementaciones historicas de cada modulo por separado,
+                                      conservadas para trazabilidad; no son parte de la
+                                      estructura evaluada por la Seccion 11
 ```
 
 Los dos modulos se compilan juntos en un unico ejecutable, `ada_p1`, a partir de `src/*.cpp`.
-
-## Dependencias
-
-- **Compilar y ejecutar `ada_p1` (obligatorio):** `g++` con soporte C++17
-  (probado con GCC 11+). No requiere ninguna biblioteca externa mas alla de
-  `src/third_party/picosha2.h`, que ya viene incluida en el repositorio.
-- **Regenerar las graficas `.png` de `results/` (opcional):** Python 3 y
-  `matplotlib`. Estos scripts (`results/generar_grafica_fb.py`,
-  `results/generar_grafica_bt.py`) **no miden tiempos ni ejecutan los
-  algoritmos**: solo grafican los `.csv` que `ada_p1` (en C++, con
-  `std::chrono`) ya genero. El lenguaje del proyecto sigue siendo C++
-  segun la Seccion 10 del enunciado; Python se usa unicamente como
-  posprocesamiento de visualizacion sobre datos ya medidos, no como parte
-  de la implementacion ni de la medicion experimental. Instalacion:
-
-  ```bash
-  pip install -r results/requirements.txt
-  python3 results/generar_grafica_fb.py
-  python3 results/generar_grafica_bt.py
-  ```
-
-  Probado con Python 3.11 y matplotlib 3.10. Si no se instala Python, el
-  proyecto sigue siendo completamente reproducible en cuanto a `ada_p1` y
-  sus resultados en `.csv`/`.txt`; solo no se regeneraran las imagenes
-  `.png` (que ya quedan incluidas en el repositorio).
 
 ## Compilacion
 
@@ -108,10 +85,8 @@ Seccion 8.2).
 ## Estado del modulo BT dentro de ada_p1
 
 `src/bt_backtracking.cpp/.hpp` ya corre el algoritmo real que Camila Garcia
-Ortiz entrego como prototipo del modulo BT (el prototipo original queda
-preservado en el historial de git -- `git log --follow -- src/bt_backtracking.cpp`
-desde el commit `a0da07b`; conversaciones de apoyo en
-`report/conversaciones_ia_bt.md`): la clase `Estado` y las
+Ortiz entrego como prototipo del modulo BT (ver `archivo_referencia/BT/main.cpp`
+y `archivo_referencia/BT/CONVERSACIONES_IA.md`): la clase `Estado` y las
 funciones `factibilidad()`, `esSolucion()` y `bt()` son las suyas. Con
 asistencia de IA (30-ago-2026, ver Seccion 17 del informe) se adaptaron
 para poder parametrizarse por alfabeto/longitud/politica desde el menu
@@ -126,8 +101,8 @@ motor que con el de respaldo que se uso antes (ver
 ## Uso de Inteligencia Artificial
 
 Declarado en detalle en la Seccion 17 del informe (`report/Informe.pdf`).
-Referencias de apoyo por modulo: `report/conversaciones_ia_fb.md`
-(Javier) y `report/conversaciones_ia_bt.md` (Camila).
+Referencias de apoyo por modulo: `archivo_referencia/FB/CONVERSACIONES_CHATGPT.md`
+(Javier) y `archivo_referencia/BT/CONVERSACIONES_IA.md` (Camila).
 
 ## Informe tecnico
 
