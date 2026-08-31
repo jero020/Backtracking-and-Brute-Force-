@@ -8,7 +8,7 @@ verificada por hash vs. construccion incremental con poda.
 
 Orden alfabetico por apellido (la semilla del equipo sale de esta lista):
 
-- Garcia Ortiz, Camila — Modulo BT (No hizo nada)
+- Garcia Ortiz, Camila — Modulo BT (Backtracking)
 - Sierra Machado, Javier Andres — Modulo FB (Fuerza Bruta)
 - Velez Acosta, Jeronimo — QA, verificacion y coordinacion
 
