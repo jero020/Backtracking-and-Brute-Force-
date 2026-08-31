@@ -5,14 +5,22 @@
 #include <string>
 #include <vector>
 
-// Modulo de Backtracking (BT). Extraido de BT/main.cpp (implementacion de
-// contingencia de Jeronimo Velez Acosta, ver BT/README.md sobre por que
-// existe) para poder compilarse como parte del binario unico ada_p1 que
-// exige la Seccion 11 del enunciado
-// (g++ -std=c++17 -O2 -o ada_p1 src/main.cpp src/*.cpp). La logica
-// algoritmica no cambio: solo se separo el antiguo `int main()` de
-// BT/main.cpp en las funciones de esta cabecera + bt_backtracking.cpp, y
-// se expuso bt::ejecutarMenu() para que src/main.cpp pueda invocarla.
+// Modulo de Backtracking (BT). El motor de busqueda de este archivo (clase
+// Estado + factibilidad() + esSolucion() + bt(), ver bt_backtracking.cpp)
+// es el algoritmo que entrego Camila Garcia Ortiz como prototipo del
+// modulo BT (ver archivo_referencia/BT/main.cpp y su README/CONVERSACIONES_IA.md).
+// Con asistencia de IA (Claude, 30-ago-2026) se adapto para poder
+// parametrizarse por alfabeto/longitud/politica desde el menu interactivo
+// de ada_p1 en vez de las 7 instancias fijas del prototipo original, y
+// para exponer una version "sin poda" que permite la comparacion de
+// correctitud de la Seccion 8.2. La logica de poda (factibilidad) no
+// cambio frente al prototipo de Camila. Antes de esta integracion,
+// ada_p1 corria un algoritmo de respaldo distinto escrito por Jeronimo
+// Velez Acosta (ver Seccion 17 del informe para el detalle).
+//
+// Ademas se conserva aqui la logica de semilla/politica del equipo
+// (namespace semilla, y bt::derivarPolitica), que es infraestructura
+// compartida independiente del motor de busqueda.
 
 namespace semilla {
 
@@ -45,19 +53,12 @@ struct Politica {
 Politica derivarPolitica(long long semillaEquipo, int longitud, bool& ajustada);
 int tipoCaracter(char c);
 
-struct EstadoConteo {
-    int lower = 0, upper = 0, digit = 0, symbol = 0;
-};
-
 struct ResultadoBT {
-    long long nodos = 0;      // con poda: visitados; sin poda: generados
+    long long nodos = 0;         // con poda: visitados; sin poda: generados
+    long long nodosPodados = 0;  // solo con poda: nodos descartados por factibilidad()
     long long soluciones = 0;
     std::vector<std::string> ejemplos;
 };
-
-void actualizarConteo(EstadoConteo& c, char ch);
-bool esFactible(const Politica& pol, const EstadoConteo& c, int posicionesRestantes);
-bool cumplePolitica(const Politica& pol, const EstadoConteo& c);
 
 ResultadoBT generarConPoda(const Politica& pol, const std::string& alfabeto, int limiteEjemplos = 10);
 

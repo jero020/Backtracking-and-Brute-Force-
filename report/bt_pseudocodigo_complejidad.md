@@ -1,21 +1,24 @@
 # Módulo BT — Pseudocódigo y análisis de complejidad
 
 > **Uso de IA:** este documento fue redactado con asistencia de IA (Claude), a
-> petición de Jerónimo Vélez Acosta, como borrador de trabajo. Si Camila
-> entrega su propia implementación de BT, este análisis debe revisarse y
-> adaptarse a su código antes de incluirse en el informe final; si el equipo
-> entrega el respaldo de `BT/main.cpp` / `ada_p1/src/bt_backtracking.*`, quien
-> lo sustente en la oral debe poder explicar cada parte de este documento.
-> Los datos de tiempo/nodos citados aquí vienen de ejecuciones reales (ver
-> `results/bt_referencia_y_variantes.csv` y `results/bt_variantes.csv`), no
-> están inventados.
+> petición de Jerónimo Vélez Acosta, como borrador de trabajo. El motor de
+> búsqueda que describe (clase `Estado`, `factibilidad()`, `esSolucion()`,
+> `bt()`) es el algoritmo real que entregó Camila García Ortiz como
+> prototipo del módulo BT (`archivo_referencia/BT/main.cpp`); se adaptó con
+> asistencia de IA (30-ago-2026) para poder correrse con alfabeto/longitud/
+> política arbitrarios desde el menú interactivo, sin cambiar la lógica de
+> poda. Los datos de tiempo/nodos citados aquí vienen de ejecuciones
+> reales (ver `results/bt_referencia_y_variantes.csv` y
+> `results/bt_variantes.csv`), no están inventados; se re-verificó tras la
+> integración que la variante (ii) reproduce exactamente los mismos
+> 199 470 612 nodos / 180 629 800 soluciones (ver Sección 17 del informe).
 
 ## 1. Representación del estado
 
 - **Estado parcial:** un prefijo de longitud *k* (0 ≤ *k* ≤ *n*), representado
-  como una cadena `prefijo`, más un contador `EstadoConteo { lower, upper,
-  digit, symbol }` con cuántos caracteres de cada categoría lleva ese
-  prefijo hasta el momento.
+  como una cadena `prefijo`, más un contador `{ lower, upper, digit,
+  symbol }` con cuántos caracteres de cada categoría lleva ese prefijo
+  hasta el momento (clase `Estado` en el código real).
 - **Estado inicial:** `prefijo = ""` (cadena vacía), `conteo = {0,0,0,0}`.
 - **Estados terminales:** cualquier prefijo con `|prefijo| = n`. Es
   **solución** si además `cumplePolitica(conteo)` es verdadero (cada

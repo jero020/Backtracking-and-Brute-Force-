@@ -89,86 +89,143 @@ int tipoCaracter(char c) {
 }
 
 // ---------------------------------------------------------------------
-// Backtracking con poda y version sin poda (Seccion 8.2)
+// Motor de busqueda con poda y version sin poda (Seccion 8.2)
+//
+// Este es el algoritmo real de Camila Garcia Ortiz para el modulo BT (ver
+// archivo_referencia/BT/main.cpp: clase Estado, factibilidad(),
+// esSolucion() y bt()), adaptado con asistencia de IA para poder
+// parametrizarse por alfabeto/longitud/politica en vez de las 7
+// instancias fijas del prototipo original, y para poder correrse tambien
+// "sin poda" (necesario para la Seccion 8.2). La regla de factibilidad
+// no cambio: sigue siendo una condicion necesaria pero no suficiente
+// (cuenta minimos de tipo de caracter que faltan contra posiciones
+// restantes, sin distinguir cuales posiciones concretas quedan libres).
 // ---------------------------------------------------------------------
-void actualizarConteo(EstadoConteo& c, char ch) {
-    switch (tipoCaracter(ch)) {
-        case 0: c.lower++; break;
-        case 1: c.upper++; break;
-        case 2: c.digit++; break;
-        default: c.symbol++; break;
-    }
-}
-
-bool esFactible(const Politica& pol, const EstadoConteo& c, int posicionesRestantes) {
-    int faltanLower  = max(0, pol.minLower  - c.lower);
-    int faltanUpper  = max(0, pol.minUpper  - c.upper);
-    int faltanDigit  = max(0, pol.minDigit  - c.digit);
-    int faltanSymbol = max(0, pol.minSymbol - c.symbol);
-    return (faltanLower + faltanUpper + faltanDigit + faltanSymbol) <= posicionesRestantes;
-}
-
-bool cumplePolitica(const Politica& pol, const EstadoConteo& c) {
-    return c.lower >= pol.minLower && c.upper >= pol.minUpper && c.digit >= pol.minDigit &&
-           c.symbol >= pol.minSymbol;
-}
-
 namespace detalle {
 
-void backtrackConPoda(const Politica& pol, const string& alfabeto, string& prefijo,
-                       EstadoConteo conteo, char ultimo, ResultadoBT& resultado,
-                       int limiteEjemplos) {
-    resultado.nodos++;
+// Estado parcial de la busqueda: el prefijo construido hasta el momento
+// y un conteo incremental de cuantos caracteres de cada tipo contiene,
+// para no tener que re-escanear el prefijo completo en cada nodo.
+class Estado {
+private:
+    string prefijo;
+    int lower;
+    int upper;
+    int digit;
+    int symbol;
 
-    if (static_cast<int>(prefijo.size()) == pol.longitud) {
-        if (cumplePolitica(pol, conteo)) {
-            resultado.soluciones++;
-            if (static_cast<int>(resultado.ejemplos.size()) < limiteEjemplos) {
-                resultado.ejemplos.push_back(prefijo);
+public:
+    Estado() : lower(0), upper(0), digit(0), symbol(0) {}
+
+    const string& getPrefijo() const { return prefijo; }
+    int getL() const { return lower; }
+    int getU() const { return upper; }
+    int getD() const { return digit; }
+    int getS() const { return symbol; }
+
+    void agregarC(char c) {
+        prefijo += c;
+        switch (tipoCaracter(c)) {
+            case 0: lower++; break;
+            case 1: upper++; break;
+            case 2: digit++; break;
+            default: symbol++; break;
+        }
+    }
+
+    void quitarC() {
+        char c = prefijo.back();
+        prefijo.pop_back();
+        switch (tipoCaracter(c)) {
+            case 0: lower--; break;
+            case 1: upper--; break;
+            case 2: digit--; break;
+            default: symbol--; break;
+        }
+    }
+};
+
+bool factibilidad(const Estado& estado, const Politica& pol, int n) {
+    const string& prefijo = estado.getPrefijo();
+    size_t k = prefijo.length();
+
+    if (pol.prohibirRepetidosConsecutivos && k >= 2) {
+        if (prefijo[k - 1] == prefijo[k - 2]) return false;
+    }
+
+    int restantes = n - static_cast<int>(k);
+    int faltaLower = max(0, pol.minLower - estado.getL());
+    int faltaUpper = max(0, pol.minUpper - estado.getU());
+    int faltaDigit = max(0, pol.minDigit - estado.getD());
+    int faltaSymbol = max(0, pol.minSymbol - estado.getS());
+
+    return (faltaLower + faltaUpper + faltaDigit + faltaSymbol) <= restantes;
+}
+
+bool esSolucion(const Estado& estado, const Politica& pol, int n) {
+    if (static_cast<int>(estado.getPrefijo().length()) != n) return false;
+
+    return estado.getL() >= pol.minLower && estado.getU() >= pol.minUpper &&
+           estado.getD() >= pol.minDigit && estado.getS() >= pol.minSymbol;
+}
+
+void bt(const string& alfabeto, int n, Estado& estado, const Politica& pol,
+        ResultadoBT& res, int limiteEjemplos) {
+    res.nodos++;
+
+    if (static_cast<int>(estado.getPrefijo().length()) == n) {
+        if (esSolucion(estado, pol, n)) {
+            res.soluciones++;
+            if (static_cast<int>(res.ejemplos.size()) < limiteEjemplos) {
+                res.ejemplos.push_back(estado.getPrefijo());
             }
         }
         return;
     }
 
-    int restantesTrasEste = pol.longitud - static_cast<int>(prefijo.size()) - 1;
-
     for (char c : alfabeto) {
-        if (pol.prohibirRepetidosConsecutivos && c == ultimo) continue; // poda: regla local
+        estado.agregarC(c);
 
-        EstadoConteo nuevoConteo = conteo;
-        actualizarConteo(nuevoConteo, c);
+        if (factibilidad(estado, pol, n)) {
+            bt(alfabeto, n, estado, pol, res, limiteEjemplos);
+        } else {
+            res.nodosPodados++;
+        }
 
-        if (!esFactible(pol, nuevoConteo, restantesTrasEste)) continue; // poda: factibilidad
-
-        prefijo.push_back(c);
-        backtrackConPoda(pol, alfabeto, prefijo, nuevoConteo, c, resultado, limiteEjemplos);
-        prefijo.pop_back();
+        estado.quitarC();
     }
 }
 
-void backtrackSinPoda(const Politica& pol, const string& alfabeto, string& prefijo,
-                       ResultadoBT& resultado) {
-    resultado.nodos++;
+// Igual que bt(), pero sin llamar nunca a factibilidad(): recorre
+// Sigma^0..Sigma^n completo y solo filtra al llegar a una hoja. Por eso
+// aqui si hay que volver a revisar la regla de "sin repetidos
+// consecutivos" al final (bt() la aplicaba de una vez en cada paso, como
+// parte de la poda; aqui nunca se aplico durante la construccion).
+void btSinPoda(const string& alfabeto, int n, Estado& estado, const Politica& pol,
+                ResultadoBT& res) {
+    res.nodos++;
 
-    if (static_cast<int>(prefijo.size()) == pol.longitud) {
-        EstadoConteo conteo;
+    if (static_cast<int>(estado.getPrefijo().length()) == n) {
         bool repetidoConsecutivo = false;
-        for (size_t i = 0; i < prefijo.size(); ++i) {
-            actualizarConteo(conteo, prefijo[i]);
-            if (i > 0 && pol.prohibirRepetidosConsecutivos && prefijo[i] == prefijo[i - 1]) {
-                repetidoConsecutivo = true;
+        if (pol.prohibirRepetidosConsecutivos) {
+            const string& prefijo = estado.getPrefijo();
+            for (size_t i = 1; i < prefijo.size(); ++i) {
+                if (prefijo[i] == prefijo[i - 1]) {
+                    repetidoConsecutivo = true;
+                    break;
+                }
             }
         }
-        if (!repetidoConsecutivo && cumplePolitica(pol, conteo)) {
-            resultado.soluciones++;
+        if (!repetidoConsecutivo && esSolucion(estado, pol, n)) {
+            res.soluciones++;
         }
         return;
     }
 
     for (char c : alfabeto) {
-        prefijo.push_back(c);
-        backtrackSinPoda(pol, alfabeto, prefijo, resultado);
-        prefijo.pop_back();
+        estado.agregarC(c);
+        btSinPoda(alfabeto, n, estado, pol, res);
+        estado.quitarC();
     }
 }
 
@@ -176,18 +233,15 @@ void backtrackSinPoda(const Politica& pol, const string& alfabeto, string& prefi
 
 ResultadoBT generarConPoda(const Politica& pol, const string& alfabeto, int limiteEjemplos) {
     ResultadoBT resultado;
-    string prefijo;
-    prefijo.reserve(static_cast<size_t>(pol.longitud));
-    EstadoConteo conteo;
-    detalle::backtrackConPoda(pol, alfabeto, prefijo, conteo, '\0', resultado, limiteEjemplos);
+    detalle::Estado estado;
+    detalle::bt(alfabeto, pol.longitud, estado, pol, resultado, limiteEjemplos);
     return resultado;
 }
 
 ResultadoBT generarSinPoda(const Politica& pol, const string& alfabeto) {
     ResultadoBT resultado;
-    string prefijo;
-    prefijo.reserve(static_cast<size_t>(pol.longitud));
-    detalle::backtrackSinPoda(pol, alfabeto, prefijo, resultado);
+    detalle::Estado estado;
+    detalle::btSinPoda(alfabeto, pol.longitud, estado, pol, resultado);
     return resultado;
 }
 
@@ -240,6 +294,7 @@ void opcionReferencia() {
     auto ms = duration_cast<milliseconds>(fin - inicio).count();
 
     cout << "Nodos visitados: " << r.nodos << "\n";
+    cout << "Nodos podados: " << r.nodosPodados << "\n";
     cout << "Soluciones encontradas: " << r.soluciones << "\n";
     cout << "Tiempo: " << ms << " ms\n";
     cout << "Ejemplos: ";
@@ -352,8 +407,8 @@ void opcionComparacion() {
                                                   static_cast<double>(sinPoda.nodos))
                             : 0.0;
 
-    cout << "\nCon poda:  nodos visitados=" << conPoda.nodos << "  soluciones=" << conPoda.soluciones
-         << "  tiempo=" << msConPoda << " ms\n";
+    cout << "\nCon poda:  nodos visitados=" << conPoda.nodos << "  nodos podados=" << conPoda.nodosPodados
+         << "  soluciones=" << conPoda.soluciones << "  tiempo=" << msConPoda << " ms\n";
     cout << "Sin poda:  nodos generados=" << sinPoda.nodos << "  soluciones=" << sinPoda.soluciones
          << "  tiempo=" << msSinPoda << " ms\n";
     cout << "Reduccion del espacio de busqueda: " << reduccion << "%\n";

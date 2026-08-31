@@ -1,7 +1,7 @@
 # Módulo FB — Pseudocódigo y análisis de complejidad
 
 > **Uso de IA:** este documento fue redactado con asistencia de IA (Claude), a
-> petición de Jerónimo Vélez Acosta, como borrador de trabajo para que Javier
+> petición de Jerónimo Vélez Acosta,
 > (autor del Módulo FB) lo revise, corrija y adopte como propio antes de
 > incluirlo en el informe final. Los datos de tiempo/intentos citados aquí
 > vienen de ejecuciones reales de `FB/main.cpp` (ver

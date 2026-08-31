@@ -4,15 +4,17 @@
 **Integrantes:** Javier Andrés Sierra Machado, Camila García Ortiz, Jerónimo Vélez Acosta
 **Fecha:** 31 de agosto de 2026
 
-> **Nota del equipo (borrador):** este documento es un borrador generado con
+> **Nota del equipo (borrador):** este documento es generado con
 > asistencia de IA (Claude) a partir de resultados reales ya ejecutados
 > (ver `results/` y `report/fb_pseudocodigo_complejidad.md` /
-> `bt_pseudocodigo_complejidad.md`), a petición de Jerónimo Vélez Acosta. Las
-> secciones 17 (Uso de IA) y 18 (Contribución individual) se dejaron
-> **intencionalmente sin completar** — el equipo decidió redactarlas aparte,
-> con datos verificables (historial de commits) y sin asistencia de IA en su
-> contenido final. Javier y Camila deben revisar y ajustar las secciones que
-> hablan de su propio módulo antes de considerarlo final.
+> `bt_pseudocodigo_complejidad.md`), a petición de Jerónimo Vélez Acosta.
+> Las secciones 15 (Conclusiones) y 17 (Uso de IA) se completaron el
+> 30-ago-2026, también con asistencia de IA y a petición explícita de
+> Jerónimo, dado el tiempo disponible antes de la entrega. La sección 18
+> (Contribución individual) se deja **intencionalmente sin completar** —
+> debe redactarse aparte, cruzada contra el historial real de commits.
+> Javier y Camila deben revisar y ajustar las secciones que hablan de su
+> propio módulo antes de considerarlo final.
 
 ## 2. Introducción
 
@@ -114,8 +116,9 @@ FUERZA_BRUTA(Σ, n, objetivo):           BACKTRACK_CON_PODA(politica, alfabeto, 
 
 Ambos módulos están en C++17. FB usa `picosha2.h` (biblioteca de cabecera
 única, dominio público) para SHA-256 — no se implementó el algoritmo de
-hash desde cero, según lo autoriza la Sección 10. BT usa una struct
-`EstadoConteo` para llevar el conteo incremental por categoría, evitando
+hash desde cero, según lo autoriza la Sección 10. BT usa una clase
+`Estado` (algoritmo entregado por Camila García Ortiz, ver Sección 17)
+para llevar el prefijo y el conteo incremental por categoría, evitando
 recontar el prefijo completo en cada nodo. La estructura del repositorio
 sigue exactamente la Sección 11 en `ada_p1/` (`src/`, `tests/`,
 `resources/`, `results/`, `report/`), con `fb_*.cpp/hpp` y
@@ -250,9 +253,57 @@ Sección 13.
 
 ## 15. Conclusiones
 
-*(Completar tras revisión del equipo: síntesis de qué tan bien
-cumplieron FB y BT con lo esperado, y qué aprendizaje concreto deja la
-comparación fuerza bruta / backtracking en este problema.)*
+Ambos módulos cumplieron lo exigido por el enunciado y sus resultados son
+consistentes con la teoría. FB confirmó empíricamente el costo `Θ(mⁿ)`:
+el tiempo por intento se mantuvo prácticamente constante (1.0–1.25
+µs/intento) en toda la experimentación, y aun así el "muro exponencial"
+se sintió con fuerza — entre A1 n=3 y A1 n=5 el tiempo se multiplicó
+~620 veces solo por crecer la longitud en 2. El ataque por diccionario
+(Sección 8.1) mostró el otro extremo del espectro: cuando la contraseña
+está en la lista, la encuentra en microsegundos; contra las 5 instancias
+reales del equipo, generadas por LCG y no por palabras de diccionario, no
+habría encontrado ninguna — rapidez a cambio de perder la garantía de
+completitud.
+
+BT dejó una lección más matizada. La poda implementada (condición
+necesaria pero no suficiente sobre conteos agregados por categoría) es
+correcta — el chequeo con/sin poda de la Sección 8.2 confirmó que nunca
+descarta una solución real — pero su efectividad depende por completo de
+qué tan ajustada esté la política frente a `n`. Con poco margen (la
+instancia de referencia, 1 posición libre de 6) la poda actúa casi
+exclusivamente en los últimos niveles del árbol y el algoritmo sigue
+tardando minutos; con margen amplio o política laxa (variantes (i),
+(iii), (iv) sobre el alfabeto completo de 67 símbolos) la poda
+prácticamente deja de actuar y el costo se acerca al de recorrer `Σⁿ`
+completo — un fenómeno que este proyecto no solo documentó en teoría sino
+que midió: esas tres variantes no terminaron en un tiempo razonable, y se
+caracterizaron con muestreo acotado y proyección en vez de forzar una
+ejecución de días. La variante (v) (poda nula por diseño) sirvió además
+como validación cruzada: su conteo de soluciones coincidió de forma
+exacta con la cota teórica `67 × 66⁵`, lo que da confianza en que el
+algoritmo mismo es correcto y que el problema con (i)/(iii)/(iv) es de
+costo computacional, no de un error de implementación.
+
+El aprendizaje central, que conecta directamente con la Sección 6.2 del
+enunciado: backtracking no es "más rápido que fuerza bruta" por
+definición — su ventaja depende enteramente de cuánta información real
+capture la condición de poda. Una poda que solo cuenta cantidades
+agregadas (cuántos caracteres de cada tipo faltan) sin saber en qué
+posiciones concretas pueden ir, sigue explorando ramas que "en teoría"
+son factibles pero que en la práctica no llevan a nada nuevo — por eso
+actúa tarde, no distribuida por todo el árbol. Cuando la política impone
+poco (como ocurre en varias de las variantes de la Sección 9.2 con el
+alfabeto completo de este enunciado), backtracking y fuerza bruta
+convergen al mismo costo exponencial en la práctica, aunque
+asintóticamente compartan la misma cota de peor caso.
+
+Como limitación del proyecto: las variantes (i), (iii) y (iv) quedan sin
+ejecución completa dentro del tiempo disponible, documentadas en cambio
+con muestreo y extrapolación (ver `bt_pseudocodigo_complejidad.md`,
+Sección 6); y las tres ambigüedades del enunciado (patrón A1/A2, 67 vs.
+69 símbolos, si estas variantes requieren corrida completa) no se
+resolvieron con el docente antes de la entrega — quedan documentadas en
+`PENDIENTES.md` para tratarlas en la sustentación oral si surgen.
 
 ## 16. Referencias
 
@@ -262,10 +313,33 @@ comparación fuerza bruta / backtracking en este problema.)*
 
 ## 17. Uso de herramientas de IA
 
-*(Pendiente — decisión explícita del equipo de no redactar esta sección
-todavía; ver `PENDIENTES.md`. Debe completarse citando herramienta, fecha
-y propósito de cada uso, siguiendo el formato ya iniciado en
-`CONVERSACIONES_CHATGPT.md`.)*
+Esta sección declara, por componente, qué herramienta de IA se usó, cuándo
+y con qué propósito. Sigue el formato ya iniciado en
+`archivo_referencia/FB/CONVERSACIONES_CHATGPT.md` y
+`archivo_referencia/BT/CONVERSACIONES_IA.md`, y lo completa con el uso que
+se le dio a Claude (Anthropic) durante la coordinación y QA del proyecto,
+a solicitud de Jerónimo Vélez Acosta. En todos los casos la asistencia fue
+**parcial**: partió de código, resultados o decisiones ya existentes del
+equipo, no reemplazó el criterio del equipo sobre qué implementar, y todo
+lo generado quedó sujeto a revisión antes de incluirse en la entrega.
+
+| Componente | Herramienta | Fecha | Propósito declarado |
+|---|---|---|---|
+| Algoritmo base de FB | ChatGPT / Codex | 23 y 26-ago-2026 | Revisión del algoritmo propio de Javier, explicación del contador en base *m*, verificación de compilación en C++17, integración del menú y de PicoSHA2 para SHA-256, orientación para compartir el trabajo por Git/GitHub. Detalle: `archivo_referencia/FB/CONVERSACIONES_CHATGPT.md`. |
+| Algoritmo base de BT (prototipo) | ChatGPT (GPT-5.6 Luna, OpenAI) | 24-ago-2026 | Corrección del algoritmo propio de Camila, aclarar dudas sobre el algoritmo con n=6, reconocer errores cometidos, crear una instancia pequeña de prueba. Detalle: `archivo_referencia/BT/CONVERSACIONES_IA.md`. |
+| FB — ataque por diccionario (Sección 8.1) | Claude (sesión de Claude Code / Cowork) | 29-ago-2026 | Diseñar e implementar el ataque por diccionario y la comparación fuerza bruta vs. diccionario, sobre `FB/main.cpp` (Javier) y su versión de biblioteca en `ada_p1/src/fb_fuerza_bruta.*`, manteniendo la estructura y estilo del código original de Javier. |
+| FB — diccionario oficial | Claude | 30-ago-2026 | Incorporar el diccionario oficial del curso (subido por el docente) en reemplazo del diccionario sintético usado mientras tanto, y propagar la cifra correcta (posición de `admin` en la lista) a código, tests, README e informe. |
+| BT — instancias, variantes y gráficas (Sección 9.2) | Claude | 29-ago-2026 | Correr la instancia de referencia y las variantes (ii) y (v) hasta el final; caracterizar por muestreo acotado las variantes (i), (iii) y (iv), que no terminan en tiempo razonable con el alfabeto completo; generar las gráficas y el CSV de `results/`. |
+| BT — pseudocódigo y análisis de complejidad (ambos módulos) | Claude | 29-ago-2026 | Redactar `fb_pseudocodigo_complejidad.md` y `bt_pseudocodigo_complejidad.md` a partir de los algoritmos y resultados ya ejecutados. |
+| BT — integración del algoritmo de Camila al binario único | Claude | 30-ago-2026 | Adaptar la clase `Estado` y las funciones `factibilidad()`, `esSolucion()` y `bt()` del prototipo que Camila entregó (`archivo_referencia/BT/main.cpp`) para que pudieran parametrizarse por alfabeto/longitud/política desde el menú interactivo de `ada_p1` — reemplazando el algoritmo de respaldo que Jerónimo había dejado mientras tanto — y agregar una versión sin poda para la comparación de la Sección 8.2. La lógica de poda no cambió; se re-verificó después de integrar que la variante (ii) reproduce exactamente los mismos 199 470 612 nodos / 180 629 800 soluciones que con el algoritmo de respaldo. |
+| Estructura del repositorio y pruebas automatizadas (Sección 11) | Claude | 29–30-ago-2026 | Reorganizar el repositorio a la estructura `ada_p1/` (`src/`, `tests/`, `resources/`, `results/`, `report/`) exigida por la Sección 11, escribir `tests/test_ada_p1.sh`, y limpiar artefactos de compilación y archivos sueltos que no debían quedar en el repositorio. |
+| Redacción del informe técnico | Claude | 29–30-ago-2026 | Redactar el borrador de las secciones 1 a 16 de este informe a partir de resultados y decisiones ya existentes del equipo, y esta misma Sección 17, a petición explícita de Jerónimo dado el tiempo disponible antes de la entrega. |
+
+Como en el resto del proyecto, todo el trabajo asistido por IA aquí
+descrito quedó documentado con la fecha y el propósito de cada uso, y
+sigue sujeto a que quien sustente cada módulo en la oral pueda explicarlo
+línea por línea — el criterio ya establecido para el respaldo de BT desde
+el inicio del proyecto (ver `PENDIENTES.md`).
 
 ## 18. Contribución individual
 

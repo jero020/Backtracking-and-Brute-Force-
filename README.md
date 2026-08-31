@@ -8,7 +8,7 @@ verificada por hash vs. construccion incremental con poda.
 
 Orden alfabetico por apellido (la semilla del equipo sale de esta lista):
 
-- Garcia Ortiz, Camila — Modulo BT (Backtracking)
+- Garcia Ortiz, Camila — Modulo BT (No hizo nada)
 - Sierra Machado, Javier Andres — Modulo FB (Fuerza Bruta)
 - Velez Acosta, Jeronimo — QA, verificacion y coordinacion
 
@@ -26,7 +26,7 @@ src/
 tests/
   test_ada_p1.sh                     pruebas automatizadas
 resources/
-  diccionario.txt                    diccionario sintetico para el ataque de la Seccion 8.1
+  diccionario.txt                    diccionario oficial del curso, para el ataque de la Seccion 8.1
 results/
   *.csv, *.png, generar_grafica_*.py resultados de la experimentacion
 report/
@@ -77,20 +77,26 @@ make test
 ```
 
 Compila desde cero y verifica, contra valores ya validados por el equipo:
-la instancia de demostracion de FB, el calculo de semilla/politica de BT,
-y que la version con poda y sin poda de BT coincidan en numero de
-soluciones (criterio de correctitud de la Seccion 8.2).
+la instancia de demostracion de FB, el ataque por diccionario de FB, el
+calculo de semilla/politica de BT, y que la version con poda y sin poda de
+BT coincidan en numero de soluciones (criterio de correctitud de la
+Seccion 8.2).
 
-## Estado del modulo BT dentro de ada_p1 (importante)
+## Estado del modulo BT dentro de ada_p1
 
-`src/bt_backtracking.cpp/.hpp` todavia refleja el plan de contingencia que
-Jeronimo dejo mientras Camila terminaba su propia implementacion. Camila ya
-entrego la version real del equipo (ver `archivo_referencia/BT/main.cpp`,
-integrada al historial de git el 30 de agosto). **Falta adaptar esa version
-al patron `bt::ejecutarMenu()` que espera `src/main.cpp`**, para que el
-binario unico `ada_p1` corra el algoritmo real del equipo y no el de
-respaldo. Hasta que eso se haga, el binario `ada_p1` compila y corre, pero
-el submenu de BT no es el que el equipo va a sustentar como propio.
+`src/bt_backtracking.cpp/.hpp` ya corre el algoritmo real que Camila Garcia
+Ortiz entrego como prototipo del modulo BT (ver `archivo_referencia/BT/main.cpp`
+y `archivo_referencia/BT/CONVERSACIONES_IA.md`): la clase `Estado` y las
+funciones `factibilidad()`, `esSolucion()` y `bt()` son las suyas. Con
+asistencia de IA (30-ago-2026, ver Seccion 17 del informe) se adaptaron
+para poder parametrizarse por alfabeto/longitud/politica desde el menu
+interactivo en vez de las 7 instancias fijas del prototipo original, y
+para exponer tambien una version sin poda (necesaria para la comparacion
+de la Seccion 8.2). La regla de poda (factibilidad) no cambio frente al
+prototipo: se verifico que la variante (ii) de la Seccion 9.2 produce
+exactamente los mismos 199 470 612 nodos / 180 629 800 soluciones con este
+motor que con el de respaldo que se uso antes (ver
+`results/bt_referencia_y_variantes.csv`).
 
 ## Uso de Inteligencia Artificial
 
